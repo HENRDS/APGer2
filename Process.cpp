@@ -34,13 +34,12 @@ Process::Process(const Process& orig) {
 Process::~Process() {
     Thread *t;
     // criar lista e adicionar elas na lista depois excluir
-    
     for (std::list<Thread*>::iterator iterator = Thread::getThreadsList()->begin(); iterator != Thread::getThreadsList()->end(); iterator++) {
         t = (*iterator);
         if (t->_state == Thread::State::READY)
             System::scheduler()->remove(t);
         if (t->getProcess() ==  this) {
-            threads->remove(t);
+            Thread::getThreadsList()->remove(t);
             Debug::cout(Debug::Level::trace, "Erase");
             delete t;
         }
