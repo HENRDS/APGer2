@@ -32,12 +32,17 @@ Process::Process(const Process& orig) {
 }
 
 Process::~Process() {
-    std::list<Thread*>* threads = Thread::getThreadsList();
+     std::list<Thread*>* threads = Thread::getThreadsList();
     Thread *t;
-    for (std::list<Thread*>::const_iterator iterator = threads.begin(), end = threads.end(); iterator != end; ++iterator) {
+    // criar lista e adicionar elas na lista depois excluir
+    
+    for (std::list<Thread*>::iterator iterator = threads->begin(); iterator != threads->end(); ++iterator) {
         t = (*iterator);
         if (t->_state == Thread::State::READY)
             System::scheduler()->remove(t);
+        threads->remove(t);
+        Debug::cout(Debug::Level::trace, "Erase");
+        //delete t;
     }
 }
 
