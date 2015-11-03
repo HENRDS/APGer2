@@ -32,17 +32,18 @@ Process::Process(const Process& orig) {
 }
 
 Process::~Process() {
-     std::list<Thread*>* threads = Thread::getThreadsList();
     Thread *t;
     // criar lista e adicionar elas na lista depois excluir
     
-    for (std::list<Thread*>::iterator iterator = threads->begin(); iterator != threads->end(); ++iterator) {
+    for (std::list<Thread*>::iterator iterator = Thread::getThreadsList()->begin(); iterator != Thread::getThreadsList()->end(); iterator++) {
         t = (*iterator);
         if (t->_state == Thread::State::READY)
             System::scheduler()->remove(t);
-        threads->remove(t);
-        Debug::cout(Debug::Level::trace, "Erase");
-        //delete t;
+        if (t->getProcess() ==  this) {
+            threads->remove(t);
+            Debug::cout(Debug::Level::trace, "Erase");
+            delete t;
+        }
     }
 }
 
@@ -97,9 +98,12 @@ Process* Process::exec() { /*static*/
 void Process::exit(int status) { /*static*/
     Debug::cout(Debug::Level::trace, "Process::exit(" + std::to_string(status) + ")");
     
-    Process* proc = Thread::running()->getProcess();
-    System::memoryManager()->deallocateMemory(proc->_memInfo._partition);
-    // The procedure to delete all threads is implemented in the destructor
-    delete proc;
+    if (Thread::running() != nullptr) {
+        Process* proc = Thread::running()->getProcess();
+        System::memoryManager()->deallocateMemory(proc->_memInfo._partition);
+        Process::getProcessesList()->remove(proc);
+        // The procedure to delete all threads is implemented in the destructor
+        delete proc;
+    }
     Thread::chooseAndDispatch();
 }
