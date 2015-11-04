@@ -34,8 +34,7 @@ Thread* Scheduler::remove(Thread* thread) {
  */
 Thread* Scheduler::choose() {
     Debug::cout(Debug::Level::trace, "Scheduler::choose()");
-    
-    if (!this->_readyQueue->empty() && this->choosen()) { 
+    if (!this->_readyQueue->empty()) { 
         if (this->_choosen != nullptr) { 
             // check if the first Thread of the queue has the smallest remaining time
             Thread*  t = this->_readyQueue->top();
@@ -51,6 +50,7 @@ Thread* Scheduler::choose() {
         }
         return _choosen;
     }
+    this->_choosen = nullptr;
     return nullptr;
 }
 
@@ -65,6 +65,6 @@ Thread* Scheduler::choose() {
 void Scheduler::reschedule() {
     Debug::cout(Debug::Level::trace, "Scheduler::reschedule()");
     if (!this->_readyQueue->empty()) {
-        // since my queue sorts items during the insert procedure I don't have to sort it again 
+        // since my queue sorts items during the insert process I don't have to sort it again 
     }
 }

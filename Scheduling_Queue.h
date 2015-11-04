@@ -20,7 +20,7 @@
 template <typename T>
 class Element {
 	private:
-		T data;
+		T data; // this should be a pointer but I have no time and is too risky to change this now
 		Element<T>* next;
 		Element<T>* prior;
 	public:
@@ -86,10 +86,16 @@ class HQueue {
 		}
 		T remove (T& item) {
 			Element<T>* i= this->head;
-			T result;
+			T result, a;
 			while (i != nullptr) {
-				if (*(i->getData()) == *item) {
+				a = i->getData();
+				if (a == item) {
 					result = i->getData();
+					if (i == this->head)
+						this->head = i->getNext(); 
+					if (i == this->tail)
+						this->tail = i->getPrior();
+					this->size--;
 					delete i;
 					return result;
 				}
@@ -129,6 +135,8 @@ class HQueue {
 			this->head= h->getNext();
 			delete h; 
 			this->size--; 
+			if (size == 0)
+				this->tail = nullptr; 
 			return r;
 		}
 		bool empty() {
@@ -159,7 +167,7 @@ class OrderedQueue: public HQueue<T> {
  * I chose to use a custom queue because it's easier to sort it, in this case I'm sorting  
  * the queue as items are inserted in it, which gives me O(n-1) in the worst case  
  */
-class Scheduling_Queue : private OrderedQueue<Thread*> { // private because I don't wanna mess the pre existent methods, although it is kinda bad practice
+class Scheduling_Queue : private OrderedQueue<Thread*> { // private because I don't wanna mess the pre existent methods
 public:
     Scheduling_Queue(): OrderedQueue<Thread*>() {}
     Scheduling_Queue(const Scheduling_Queue& orig) {}

@@ -22,6 +22,7 @@ Thread::Thread(Process* task, Thread::State state) {
     this->_queue = new Queue<Thread*>();
     this->_accountInfo._cpuTime = 0;
     this->_accountInfo._cpuBurstTime = Traits<Thread>::minCpuBurst; // SEE
+    this->_accountInfo._priority = this->_accountInfo._cpuBurstTime;
 }
 
 Thread::Thread(const Thread& orig) {
@@ -143,12 +144,9 @@ void Thread::dispatch(Thread* previous, Thread* next) {
     _running = next;
     // verificar se a próxima thread (next) é nula ou não. Se for, nada precisa ser feito
     if (next != nullptr) {
-        if ((previous == next) && (x)) // just to be sure that chooseAndDispatch work properly, it's temporary
-            Debug::cout(Debug::Level::trace, "FUCK!");
         // a thread a ser executada precisa ser colocada no estado RUNNING
         next->_state = Thread::State::RUNNING;
         // e retirada da fila de prontos  => Done in Scheduler::choose() 
-        //System::scheduler()->remove(next);
         // next started to run now
         next->_accountInfo._cpuArrivalTime = Simulator::getInstance()->getTnow();
         // deve ser verificado se a thread anterior (previous) é diferente de nula e também se é diferente da próxma thread
@@ -204,7 +202,6 @@ void Thread::nextBurstTime() {
         if (this->_accountInfo._cpuBurstTime < Traits<Thread>::minCpuBurst)
             this->_accountInfo._cpuBurstTime = Traits<Thread>::minCpuBurst;
     }
-    Debug::cout(Debug::Level::info, "Thread(" + std::to_string(reinterpret_cast<unsigned long> (this)) + ") BurstTime: " + std::to_string(this->_accountInfo._cpuBurstTime));
     this->updatePriority();
 }
 
@@ -212,11 +209,7 @@ void Thread::updatePriority() {
     int p = this->calcRemainingTime();
 
     this->_accountInfo._priority = (p < 0 ? 0 : p);
-    this->_accountInfo._cpuBurstTime = this->_accountInfo._priority;// not sure about this.... 
-    //Debug::cout(Debug::Level::trace, static_cast<std::string>(*this));
-    
-    Debug::cout(Debug::Level::trace, "Thread(" + std::to_string(reinterpret_cast<unsigned long> (this)) + 
-        ") Priority: " + std::to_string(this->_accountInfo._priority) + " p = " + std::to_string(p)); 
+    this->_accountInfo._cpuBurstTime = this->_accountInfo._priority;// not sure about this....  
 }
 
 int Thread::calcRemainingTime() {

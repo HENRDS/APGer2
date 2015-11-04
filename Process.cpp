@@ -10,6 +10,7 @@
 #include "Thread.h"
 #include "System.h"
 #include "Simulator.h"
+#include "Scheduling_Queue.h" // no desespero
 
 Process::Process(unsigned int parentId) {
     this->_entity = Simulator::getInstance()->getEntity(); // simulation purposes only
@@ -32,22 +33,7 @@ Process::Process(const Process& orig) {
 }
 
 Process::~Process() {
-    Thread *t;
-    std::list<Thread*>* threads = new std::list<Thread*>();
-    // criar lista e adicionar elas na lista depois excluir
-    Debug::cout(Debug::Level::trace, "Global threads size = " + std::to_string(Thread::getThreadsList()->size()));
-    for (std::list<Thread*>::iterator it = Thread::getThreadsList()->begin(); it != Thread::getThreadsList()->end(); it++) {
-        if (t->getProcess() ==  this) 
-            threads->push_back((*it));
-    }
-    Debug::cout(Debug::Level::trace, "Threads size = " + std::to_string(threads->size()));
-    for (std::list<Thread*>::iterator it = threads->begin(); it != threads->end(); it++) {
-        if (t->_state == Thread::State::READY)
-            System::scheduler()->remove(t);
-        threads->remove(*it);
-        Debug::cout(Debug::Level::trace, "Erase");
-        delete *it;
-    }
+    
 }
 
 unsigned int Process::getParentId() const {
@@ -105,7 +91,21 @@ void Process::exit(int status) { /*static*/
         Process* proc = Thread::running()->getProcess();
         System::memoryManager()->deallocateMemory(proc->_memInfo._partition);
         Process::getProcessesList()->remove(proc);
-        // The procedure to delete all threads is implemented in the destructor
+        // Segmentation fault is a bitch...
+        HQueue<Thread*>* threads = new HQueue<Thread*>();
+        // criar lista e adicionar elas na lista depois excluir
+        for (std::list<Thread*>::iterator it = Thread::getThreadsList()->begin(); it != Thread::getThreadsList()->end(); it++) {
+            if ((*it)->getProcess() ==  proc) 
+                threads->push((*it));
+        }
+         
+        while (!threads->empty()) {
+            Thread *t = threads->pop();
+            if (t->_state == Thread::State::READY)
+                System::scheduler()->remove(t);
+            delete t;
+        }
+        delete threads;
         delete proc;
     }
     Thread::chooseAndDispatch();
