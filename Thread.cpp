@@ -139,10 +139,10 @@ void Thread::dispatch(Thread* previous, Thread* next) {
     // INSERT YOUR CODE HERE
     // ...
     // o atributo _running deve ser atualizado
+    bool x = (next != previous);
     _running = next;
     // verificar se a próxima thread (next) é nula ou não. Se for, nada precisa ser feito
     if (next != nullptr) {
-        bool x = (next != previous);
         if ((previous == next) && (x)) // just to be sure that chooseAndDispatch work properly, it's temporary
             Debug::cout(Debug::Level::trace, "FUCK!");
         // a thread a ser executada precisa ser colocada no estado RUNNING

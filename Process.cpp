@@ -35,6 +35,7 @@ Process::~Process() {
     Thread *t;
     std::list<Thread*>* threads = new std::list<Thread*>();
     // criar lista e adicionar elas na lista depois excluir
+    Debug::cout(Debug::Level::trace, "Global threads size = " + std::to_string(Thread::getThreadsList()->size()));
     for (std::list<Thread*>::iterator it = Thread::getThreadsList()->begin(); it != Thread::getThreadsList()->end(); it++) {
         threads->push_back((*it));
     }
