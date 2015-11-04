@@ -37,17 +37,16 @@ Process::~Process() {
     // criar lista e adicionar elas na lista depois excluir
     Debug::cout(Debug::Level::trace, "Global threads size = " + std::to_string(Thread::getThreadsList()->size()));
     for (std::list<Thread*>::iterator it = Thread::getThreadsList()->begin(); it != Thread::getThreadsList()->end(); it++) {
-        threads->push_back((*it));
+        if (t->getProcess() ==  this) 
+            threads->push_back((*it));
     }
     Debug::cout(Debug::Level::trace, "Threads size = " + std::to_string(threads->size()));
     for (std::list<Thread*>::iterator it = threads->begin(); it != threads->end(); it++) {
         if (t->_state == Thread::State::READY)
             System::scheduler()->remove(t);
-        if (t->getProcess() ==  this) {
-            threads->remove(*it);
-            Debug::cout(Debug::Level::trace, "Erase");
-            delete *it;
-        }
+        threads->remove(*it);
+        Debug::cout(Debug::Level::trace, "Erase");
+        delete *it;
     }
 }
 

@@ -84,7 +84,6 @@ protected:
     AccountInformation _accountInfo;
     Queue<Thread*>* _queue;
     void nextBurstTime();
-    void updatePriority();
 
 public: // USER DEFINED
     inline bool operator ==(const Thread& b) {
@@ -104,6 +103,7 @@ public: // USER DEFINED
     }
     static void chooseAndDispatch();
     int calcRemainingTime();
+    void updatePriority();
 private: // USER DEFINED
     // INSERT YOUR CODE HERE
     // ...
