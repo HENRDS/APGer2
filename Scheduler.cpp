@@ -18,6 +18,8 @@ Thread* Scheduler::choosen() {
 }
 
 void Scheduler::insert(Thread* thread) {
+    if (this->_choosen != nullptr)
+        this->_choosen->updatePriority();
     this->_readyQueue->insert(thread);
 }
 
@@ -34,20 +36,9 @@ Thread* Scheduler::remove(Thread* thread) {
  */
 Thread* Scheduler::choose() {
     Debug::cout(Debug::Level::trace, "Scheduler::choose()");
-    if (!this->_readyQueue->empty()) { 
-        if (this->_choosen != nullptr) { 
-            // check if the first Thread of the queue has the smallest remaining time
-            Thread*  t = this->_readyQueue->top();
-            this->_choosen->updatePriority();
-           
-            if (*t < *(this->_choosen)) {
-                this->_readyQueue->pop();
-                this->_readyQueue->insert(this->_choosen);
-                this->_choosen = t;
-            }
-        } else { // just take the first Thread of the queue
-            this->_choosen = this->_readyQueue->pop();    
-        }
+    
+    if (!this->_readyQueue->empty()) {  
+        this->_choosen = this->_readyQueue->top();    
         return _choosen;
     }
     this->_choosen = nullptr;

@@ -84,7 +84,7 @@ void Thread::yield() {
  **/
 int Thread::join() {
     Debug::cout(Debug::Level::trace, "Thread::join()");
-    Debug::cout(Debug::Level::trace, std::to_string(reinterpret_cast<long>(Thread::_running) + " join " + std::to_string(reinterpret_cast<long>(this)));
+    Debug::cout(Debug::Level::trace, std::to_string(reinterpret_cast<long>(Thread::_running)) + " join " + std::to_string(reinterpret_cast<long>(this)));
     /*
     if (Thread::_running == this) {
         Debug::cout(Debug::Level::trace, "A thread cannot join itself! " + 
@@ -96,6 +96,7 @@ int Thread::join() {
         Thread::_running->updatePriority(); // calculate the remaining execution time;
         Thread::_running->_state = Thread::State::WAITING;
         this->_queue->push_back(Thread::_running);
+        System::scheduler()->remove(Thread::_running);
         Thread::chooseAndDispatch();  
     }        
     
@@ -147,7 +148,8 @@ void Thread::dispatch(Thread* previous, Thread* next) {
     if (next != nullptr) {
         // a thread a ser executada precisa ser colocada no estado RUNNING
         next->_state = Thread::State::RUNNING;
-        // e retirada da fila de prontos  => Done in Scheduler::choose() 
+        // e retirada da fila de prontos  => Done in Scheduler::choose()
+        System::scheduler()->remove(previous); 
         // next started to run now
         next->_accountInfo._cpuArrivalTime = Simulator::getInstance()->getTnow();
         // deve ser verificado se a thread anterior (previous) é diferente de nula e também se é diferente da próxma thread

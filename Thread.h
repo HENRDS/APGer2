@@ -17,6 +17,7 @@ class Thread {
     friend class ModuleInvoke_ThreadExec; // simulator use only
     friend class TimerMediator;
     friend class Process;
+    friend class Tester; // for simulation purposes on    
 
     enum State {
         RUNNING,
