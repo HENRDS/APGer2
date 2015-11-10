@@ -19,7 +19,7 @@
 class Process {
     friend class Thread;
     friend class ModuleInvoke_ProcessExec; // for simulation purposes only
-
+    friend class Tester; // for simulation purposes on
 
     // structs for grouping process' attributes
 

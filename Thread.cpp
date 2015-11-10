@@ -84,6 +84,7 @@ void Thread::yield() {
  **/
 int Thread::join() {
     Debug::cout(Debug::Level::trace, "Thread::join()");
+    Debug::cout(Debug::Level::trace, std::to_string(reinterpret_cast<long>(Thread::_running) + " join " + std::to_string(reinterpret_cast<long>(this)));
     /*
     if (Thread::_running == this) {
         Debug::cout(Debug::Level::trace, "A thread cannot join itself! " + 

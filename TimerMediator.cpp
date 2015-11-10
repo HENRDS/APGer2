@@ -26,5 +26,6 @@ void TimerMediator::interrupt_handler() {
     if (System::scheduler()->preemptive) {
         // INSERT YOUR CODE HERE
         // ...
+        Thread::chooseAndDispatch();
     }
 }
